@@ -4,6 +4,7 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.svm import SVC
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
+import os
 
 # Load the CSV data
 data = pd.read_csv("data.csv")
@@ -88,6 +89,8 @@ st.markdown("<h3>Resourcefulness:</h3>", unsafe_allow_html=True)
 st.markdown("<p>On a scale of 1 to 5, how adept are you at finding creative and effective solutions within constraints and limitations?</p>", unsafe_allow_html=True)
 resourcefulness = st.slider("", 1, 5, key="slider_resourcefulness")
 
+# ...
+
 # Submit button
 submit_button = st.button("Submit")
 
@@ -99,6 +102,28 @@ if submit_button:
     
     # Make a prediction using the trained model
     prediction = svc.predict(scaled_input)
+
+    # Specify the file to store user inputs and predictions
+    user_input_file = "user_inputs_predictions.csv"
+
+    # Columns for the input DataFrame
+    columns = ["Creativity & Innovation", "Adapability & Flexibility", "Problem Solving Skills", "Empathy & User Centric Focus", "Iterative Mindset", "Leadership Influence", "Critical Thinking", "Continuous Learning", "Resourcefulness", "Predicted Role"]
+
+    # Append prediction to the input data
+    input_data[0].append(prediction[0])
+    
+    # Check if file exists
+    if not os.path.exists(user_input_file):
+        # If file does not exist, create a new DataFrame with column headers and save it
+        user_inputs_df = pd.DataFrame([input_data[0]], columns=columns)
+    else:
+        # If file exists, read it, append the new input with prediction and save it
+        user_inputs_df = pd.read_csv(user_input_file)
+        new_input = pd.DataFrame([input_data[0]], columns=columns)
+        user_inputs_df = user_inputs_df.append(new_input, ignore_index=True)
+    
+    # Save the updated DataFrame to CSV
+    user_inputs_df.to_csv(user_input_file, index=False)
 
     # Display prediction
     st.markdown(f"<h3>Your Predicted Role: <strong>{prediction[0]}</strong></h3>", unsafe_allow_html=True)
