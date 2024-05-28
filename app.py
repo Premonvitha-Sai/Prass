@@ -120,7 +120,7 @@ if submit_button:
         # If file exists, read it, append the new input with prediction and save it
         user_inputs_df = pd.read_csv(user_input_file)
         new_input = pd.DataFrame([input_data[0]], columns=columns)
-        user_inputs_df = user_inputs_df.append(new_input, ignore_index=True)
+        user_inputs_df = pd.concat([user_inputs_df, new_input], ignore_index=True)
     
     # Save the updated DataFrame to CSV
     user_inputs_df.to_csv(user_input_file, index=False)
